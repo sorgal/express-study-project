@@ -1,13 +1,18 @@
-const express = require('express')
+const express = require('express');
 
-const error404 = require('./middleware/err-404')
-const indexRouter = require('./routes/index')
+const errorMiddleware = require('./middleware/error');
 
-const app = express()
+const indexRouter = require('./routes/index');
+const booksRouter = require('./routes/books');
 
-app.use('/', indexRouter)
+const app = express();
+app.use(express.urlencoded());
+app.set("view engine", "ejs");
 
-app.use(error404)
+app.use('/', indexRouter);
+app.use('/books', booksRouter);
 
-const PORT = process.env.PORT || 3000
-app.listen(PORT)
+app.use(errorMiddleware);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT);
