@@ -1,0 +1,63 @@
+atyarkin@NB-112802:~/education/express-study-project$ sudo docker pull busybox:latest
+latest: Pulling from library/busybox
+19d511225f94: Pull complete 
+Digest: sha256:3614ca5eacf0a3a1bcc361c939202a974b4902b9334ff36eb29ffe9011aaad83
+Status: Downloaded newer image for busybox:latest
+docker.io/library/busybox:latest
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker run --name pinger -i -t busybox ping -c 7 netology.ru
+PING netology.ru (188.114.98.171): 56 data bytes
+64 bytes from 188.114.98.171: seq=0 ttl=58 time=18.750 ms
+64 bytes from 188.114.98.171: seq=1 ttl=58 time=28.272 ms
+64 bytes from 188.114.98.171: seq=2 ttl=58 time=26.497 ms
+64 bytes from 188.114.98.171: seq=3 ttl=58 time=27.091 ms
+64 bytes from 188.114.98.171: seq=4 ttl=58 time=23.444 ms
+64 bytes from 188.114.98.171: seq=5 ttl=58 time=29.853 ms
+64 bytes from 188.114.98.171: seq=6 ttl=58 time=27.317 ms
+
+--- netology.ru ping statistics ---
+7 packets transmitted, 7 packets received, 0% packet loss
+round-trip min/avg/max = 18.750/25.889/29.853 ms
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                      PORTS     NAMES
+f4587a166aad   busybox   "ping -c 7 netology.…"   27 seconds ago   Exited (0) 15 seconds ago             pinger
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker logs -f -t pinger
+2022-07-03T08:32:57.804578471Z PING netology.ru (188.114.98.171): 56 data bytes
+2022-07-03T08:32:57.823287925Z 64 bytes from 188.114.98.171: seq=0 ttl=58 time=18.750 ms
+2022-07-03T08:32:58.833113106Z 64 bytes from 188.114.98.171: seq=1 ttl=58 time=28.272 ms
+2022-07-03T08:32:59.833886282Z 64 bytes from 188.114.98.171: seq=2 ttl=58 time=26.497 ms
+2022-07-03T08:33:00.837335408Z 64 bytes from 188.114.98.171: seq=3 ttl=58 time=27.091 ms
+2022-07-03T08:33:01.836844646Z 64 bytes from 188.114.98.171: seq=4 ttl=58 time=23.444 ms
+2022-07-03T08:33:02.846249692Z 64 bytes from 188.114.98.171: seq=5 ttl=58 time=29.853 ms
+2022-07-03T08:33:03.846961749Z 64 bytes from 188.114.98.171: seq=6 ttl=58 time=27.317 ms
+2022-07-03T08:33:03.847080955Z 
+2022-07-03T08:33:03.847133602Z --- netology.ru ping statistics ---
+2022-07-03T08:33:03.847163477Z 7 packets transmitted, 7 packets received, 0% packet loss
+2022-07-03T08:33:03.847189205Z round-trip min/avg/max = 18.750/25.889/29.853 ms
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker run --name pinger -i -t busybox ping -c 7 netology.ru
+docker: Error response from daemon: Conflict. The container name "/pinger" is already in use by container "f4587a166aadf6cac6f425079e01354af8dd1ae109646718e62e12f686691404". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                      PORTS     NAMES
+f4587a166aad   busybox   "ping -c 7 netology.…"   53 seconds ago   Exited (0) 41 seconds ago             pinger
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker logs -f -t pinger
+2022-07-03T08:32:57.804578471Z PING netology.ru (188.114.98.171): 56 data bytes
+2022-07-03T08:32:57.823287925Z 64 bytes from 188.114.98.171: seq=0 ttl=58 time=18.750 ms
+2022-07-03T08:32:58.833113106Z 64 bytes from 188.114.98.171: seq=1 ttl=58 time=28.272 ms
+2022-07-03T08:32:59.833886282Z 64 bytes from 188.114.98.171: seq=2 ttl=58 time=26.497 ms
+2022-07-03T08:33:00.837335408Z 64 bytes from 188.114.98.171: seq=3 ttl=58 time=27.091 ms
+2022-07-03T08:33:01.836844646Z 64 bytes from 188.114.98.171: seq=4 ttl=58 time=23.444 ms
+2022-07-03T08:33:02.846249692Z 64 bytes from 188.114.98.171: seq=5 ttl=58 time=29.853 ms
+2022-07-03T08:33:03.846961749Z 64 bytes from 188.114.98.171: seq=6 ttl=58 time=27.317 ms
+2022-07-03T08:33:03.847080955Z 
+2022-07-03T08:33:03.847133602Z --- netology.ru ping statistics ---
+2022-07-03T08:33:03.847163477Z 7 packets transmitted, 7 packets received, 0% packet loss
+2022-07-03T08:33:03.847189205Z round-trip min/avg/max = 18.750/25.889/29.853 ms
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker rm pinger
+pinger
+batyarkin@NB-112802:~/education/express-study-project$ sudo docker rmi busybox
+Untagged: busybox:latest
+Untagged: busybox@sha256:3614ca5eacf0a3a1bcc361c939202a974b4902b9334ff36eb29ffe9011aaad83
+Deleted: sha256:62aedd01bd8520c43d06b09f7a0f67ba9720bdc04631a8242c65ea995f3ecac8
+Deleted: sha256:7ad00cd55506625f2afad262de6002c8cef20d214b353e51d1025e40e8646e18
+batyarkin@NB-112802:~/education/express-study-project$ 
+
