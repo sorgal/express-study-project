@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  library:
+    image: nodestudy/library:latest
+    ports:
+    - "3000:3000"    
+    network_mode: host
+  counter:
+    image: nodestudy/counter:latest
+    ports:
+    - "3001:3001"
+    network_mode: host
