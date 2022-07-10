@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const fileMulter = require('../middleware/file')
 const fs = require('fs');
+const axios = require('axios');
 
 const { v4: uuid } = require('uuid')
 
@@ -59,15 +60,26 @@ router.get('/:id', (req, res) => {
     const {books} = stor
     const {id} = req.params
     const idx = books.findIndex(el => el.id === id)
+    
+    axios
+        .get(`http://localhost:3001/counter/${id}`)
+        .then(response => {
+            response.data
 
-    if (idx === -1) {
-        res.redirect('/404');
-    } 
-        
-    res.render("books/view", {
-        title: "Book | view",
-        book: books[idx],
-    });
+            if (idx === -1) {
+                res.redirect('/404');
+            } 
+                
+            res.render("books/view", {
+                title: "Book | view",
+                book: books[idx],
+                counter: response.data,
+            });
+        })
+        .catch(error => {
+            console.error(error);
+            0
+        });
 })
 
 router.get('/update/:id', (req, res) => {
