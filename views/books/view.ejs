@@ -32,4 +32,77 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-4">
+        <div id="list" class="list-group">
+            <% if(comments.length) { %>
+                <% comments.map((msg, idx) => {  %>
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <small><%= msg.username %></small>
+                        </div>
+                        <p class="mb-1"><%= msg.text %></p>
+                    </div>
+                <% }) %>
+            <% } %> 
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-4">
+        <div class="form-group">
+            <label for="username">username</label>
+            <input
+                    placeholder="username"
+                    type="text"
+                    id="username"
+                    class="form-control"
+            >
+        </div>
+        <div class="form-group">
+            <label for="text">message</label>
+            <textarea
+                    placeholder="message"
+                    class="form-control"
+                    id="text"
+            ></textarea>
+        </div>
+        <button type="submit" id="send" class="btn btn-primary">Отправить</button>
+    </div>
+</div>
+
+<script>
+    const roomName = location.pathname.split('/').pop();
+    const socket = io.connect('/', {query: `roomName=${roomName}`});
+    
+    const boxList       = document.querySelector('#list');
+    const inputUsername = document.querySelector('#username');
+    const inputText     = document.querySelector('#text');
+    const send          = document.querySelector('#send');
+
+    const getTmp = (msg) => {
+        return `
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <small>${msg.username}</small>
+                    </div>
+                    <p class="mb-1">${msg.text}</p>
+                </div>
+        `;
+    };
+
+    socket.on('message-to-room', (msg) => {
+        const div = getTmp(msg)
+        boxList.insertAdjacentHTML('beforeend', div)
+    });
+
+    send.addEventListener('click', () => {
+        socket.emit('message-to-room', {
+            username: inputUsername.value,
+            text: inputText.value,
+        })
+    })
+</script>
+
 <%- include('../port/layout-end') %>
