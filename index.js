@@ -1,4 +1,7 @@
 const express = require('express');
+const mongoose= require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/mydb')
 
 const errorMiddleware = require('./middleware/error');
 
@@ -14,5 +17,15 @@ app.use('/books', booksRouter);
 
 app.use(errorMiddleware);
 
+async function start(PORT, UrlDB) {
+    try {
+        await mongoose.connect(UrlDB)
+        app.listen(PORT)
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+const UrlDB = process.env.UrlDB || 'mongodb://localhost:27017/mydb';
 const PORT = process.env.PORT || 3000;
-app.listen(PORT);
+start(PORT, UrlDB)
