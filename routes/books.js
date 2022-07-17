@@ -5,11 +5,6 @@ const fs = require('fs');
 const axios = require('axios');
 const Book = require('../models/book')
 
-router.post('/user/login', (req, res) => {
-    res.status(201)
-    res.json({ id: 1, mail: "test@mail.ru" })
-})
-
 router.get('/', async (req, res) => {
     try {
         const books = await Book.find().select('-__v')

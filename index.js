@@ -7,6 +7,7 @@ const errorMiddleware = require('./middleware/error');
 
 const indexRouter = require('./routes/index');
 const booksRouter = require('./routes/books');
+const usersRouter = require('./routes/users');
 
 const app = express();
 app.use(express.urlencoded());
@@ -14,6 +15,7 @@ app.set("view engine", "ejs");
 
 app.use('/', indexRouter);
 app.use('/books', booksRouter);
+app.use('/api/users', usersRouter);
 
 app.use(errorMiddleware);
 
