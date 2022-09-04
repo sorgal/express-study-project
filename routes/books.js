@@ -4,6 +4,7 @@ const fileMulter = require('../middleware/file')
 const fs = require('fs');
 const axios = require('axios');
 const Book = require('../models/book')
+const Comment = require('../models/comment')
 
 router.get('/', async (req, res) => {
     try {
@@ -42,13 +43,15 @@ router.get('/:id', async (req, res) => {
     
     try {
         const book = await Book.findById(id).select('-__v')
+        const comments = await Comment.find({ roomName: id })
         if (!book.id.length) {
             res.redirect('/404');
         } 
             
         res.render("books/view", {
             title: "Book | view",
-            book: book
+            book: book,
+            comments: comments
         });
     } catch(e) {
         res.status(500).json(e)
