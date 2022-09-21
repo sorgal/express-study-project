@@ -1,14 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es5",
     "module": "system",
-    "outFile": "./src/app.js",
+    "outFile": "./src/container.js",
     "rootDir": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "lib": ["es6", "dom"],
+    "types": ["reflect-metadata", "node"],
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/*"],
   "exclude": ["node_modules"]
