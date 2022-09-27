@@ -10,7 +10,7 @@ interface BookInterface {
     fileBook: string;
 }
 
-class BookRepository {
+export class BookRepository {
     async createBook(book: BookInterface): Promise<BookInterface> {
         const newBook = new Book(book)
 

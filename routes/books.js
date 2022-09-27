@@ -5,6 +5,7 @@ const fs = require('fs');
 const axios = require('axios');
 const Book = require('../models/book')
 const Comment = require('../models/comment')
+const container = require('../src/container')
 
 router.get('/', async (req, res) => {
     try {
@@ -38,15 +39,16 @@ router.post('/create', async (req, res) => {
     }
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',  (req, res) => {
     const {id} = req.params
     
     try {
-        const book = await Book.findById(id).select('-__v')
+        const repo = container.get(BooksRepository);
+        const book = await repo.getBook(id);
         const comments = await Comment.find({ roomName: id })
         if (!book.id.length) {
             res.redirect('/404');
-        } 
+        }
             
         res.render("books/view", {
             title: "Book | view",
