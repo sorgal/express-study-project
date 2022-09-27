@@ -1,10 +1,9 @@
-const express = require('express')
 const router = express.Router()
 const fileMulter = require('../middleware/file')
 const fs = require('fs');
 const axios = require('axios');
 const Book = require('../models/book')
-const Comment = require('../models/comment')
+const BookRepository = require('../book_repository')
 const container = require('../src/container')
 
 router.get('/', async (req, res) => {
@@ -39,13 +38,13 @@ router.post('/create', async (req, res) => {
     }
 })
 
-router.get('/:id',  (req, res) => {
+router.get('/:id', async (req, res) => {
     const {id} = req.params
     
     try {
-        const repo = container.get(BooksRepository);
+        const repo = container.get(BookRepository);
         const book = await repo.getBook(id);
-        const comments = await Comment.find({ roomName: id })
+        const comments = await BookComment.find({ roomName: id })
         if (!book.id.length) {
             res.redirect('/404');
         }
