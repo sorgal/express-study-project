@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose= require('mongoose');
 const http = require('http');
 const socketIO = require('socket.io');
-const Comment = require('./models/comment')
+const BookComment = require('./models/comment')
 
 mongoose.connect('mongodb://localhost:27017/mydb')
 
@@ -15,7 +15,7 @@ const usersRouter = require('./routes/users');
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server, {
-    allowEIO3: true // false by default
+    allowEIO3: true
 });
 
 app.use(express.urlencoded());
@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
     socket.on('message-to-room', async (msg) => {
         const {text, username} = msg
 
-        const newComment = new Comment({ text, username })
+        const newComment = new BookComment({ text, username })
         newComment.roomName = roomName
 
         try {

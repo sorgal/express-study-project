@@ -41,7 +41,7 @@ System.register("book_repository", [], function (exports_1, context_1) {
     return {
         setters: [],
         execute: function () {
-            Book = require('../models/book');
+            Book = require('./models/book');
             BookRepository = /** @class */ (function () {
                 function BookRepository() {
                 }
