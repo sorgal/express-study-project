@@ -3,6 +3,7 @@ const mongoose= require('mongoose');
 const http = require('http');
 const socketIO = require('socket.io');
 const BookComment = require('./models/comment')
+const AppModule = require('../app/app.module')
 
 mongoose.connect('mongodb://localhost:27017/mydb')
 

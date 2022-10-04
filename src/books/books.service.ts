@@ -1,94 +1,36 @@
+import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Book, BookDocument } from '../schemas/book.schema';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 
-const { v4: uuid } = require('uuid')
-
-class Book {
-    id: string;
-    title: string;
-    description: string;
-    authors: string;
-    favorite: string;
-    fileCover: string;
-    fileName: string;
-
-    constructor(title = "", description = "", authors = "", favorite = "", fileCover = "", fileName = "", id = uuid()) {
-        this.title = title
-        this.description = description
-        this.authors = authors
-        this.favorite = favorite
-        this.fileCover = fileCover
-        this.fileName = fileName
-        this.id = id
-    }
-}
-
-const stor = {
-  books: [
-      new Book(),
-      new Book(),
-  ],
-};
-
 @Injectable()
 export class BooksService {
+  constructor(@InjectModel(Book.name) private bookModel: Model<BookDocument>) {}
+
   create(createBookDto: CreateBookDto) {
-    const {books} = stor
-    const {title, description, authors, favorite, fileCover, fileName} = createBookDto
+    const createdBook = new this.bookModel(createBookDto);
+    createdBook.save();
 
-    const newbooks = new Book(title, description, authors, favorite, fileCover, fileName)
-    books.push(newbooks)
-
-    return newbooks;
+    return createdBook;
   }
 
   findAll() {
-    const {books} = stor
-    return books;
+    return this.bookModel.find().exec();
   }
 
   findOne(id: string) {
-    const {books} = stor
-    const idx = books.findIndex(el => el.id === id)
-
-    if( idx !== -1) {
-        return books[idx];
-    } else {
-       return '404 | книга не найдена';
-    }
+    return this.bookModel.findById(id).exec();
   }
 
   update(id: string, updateBookDto: UpdateBookDto) {
-    const {books} = stor
-    const {title, description, authors, favorite, fileCover, fileName} = updateBookDto
-    const idx = books.findIndex(el => el.id === id)
-
-    if (idx !== -1){
-        books[idx] = {
-            ...books[idx],
-            title,
-            description,
-            authors,
-            favorite,
-            fileCover,
-            fileName
-        }
-        return books[idx];
-    } else {
-       return '404 | книга не найдена';
-    }
+    const book = this.bookModel.findByIdAndUpdate(id, updateBookDto).exec();
+    return book;
   }
 
   remove(id: string) {
-    const {books} = stor
-    const idx = books.findIndex(el => el.id === id)
-
-    if(idx !== -1){
-        books.splice(idx, 1)
-        return true;
-    } else {
-       return '404 | книга не найдена';
-    }
+    const book = this.bookModel.deleteOne({ id: id }).exec();
+    return book;
   }
 }
