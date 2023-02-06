@@ -61,10 +61,51 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-System.register("schemas/book.schema", ["@nestjs/mongoose"], function (exports_1, context_1) {
+System.register("app.logging.interceptor", ["@nestjs/common", "express", "rxjs", "rxjs/operators"], function (exports_1, context_1) {
+    "use strict";
+    var common_1, express_1, rxjs_1, operators_1, LoggingInterceptor;
+    var __moduleName = context_1 && context_1.id;
+    return {
+        setters: [
+            function (common_1_1) {
+                common_1 = common_1_1;
+            },
+            function (express_1_1) {
+                express_1 = express_1_1;
+            },
+            function (rxjs_1_1) {
+                rxjs_1 = rxjs_1_1;
+            },
+            function (operators_1_1) {
+                operators_1 = operators_1_1;
+            }
+        ],
+        execute: function () {
+            LoggingInterceptor = /** @class */ (function () {
+                function LoggingInterceptor() {
+                }
+                LoggingInterceptor.prototype.intercept = function (context, next) {
+                    return next
+                        .handle()
+                        .pipe(operators_1.tap(function (data) {
+                        return express_1.response.json({ status: 'success', data: data });
+                    }), operators_1.catchError(function (err) {
+                        return rxjs_1.throwError({ status: 'error', data: err });
+                    }));
+                };
+                LoggingInterceptor = __decorate([
+                    common_1.Injectable()
+                ], LoggingInterceptor);
+                return LoggingInterceptor;
+            }());
+            exports_1("LoggingInterceptor", LoggingInterceptor);
+        }
+    };
+});
+System.register("schemas/book.schema", ["@nestjs/mongoose"], function (exports_2, context_2) {
     "use strict";
     var mongoose_1, Book, BookSchema;
-    var __moduleName = context_1 && context_1.id;
+    var __moduleName = context_2 && context_2.id;
     return {
         setters: [
             function (mongoose_1_1) {
@@ -108,15 +149,15 @@ System.register("schemas/book.schema", ["@nestjs/mongoose"], function (exports_1
                 ], Book);
                 return Book;
             }());
-            exports_1("Book", Book);
-            exports_1("BookSchema", BookSchema = mongoose_1.SchemaFactory.createForClass(Book));
+            exports_2("Book", Book);
+            exports_2("BookSchema", BookSchema = mongoose_1.SchemaFactory.createForClass(Book));
         }
     };
 });
-System.register("books/dto/create-book.dto", [], function (exports_2, context_2) {
+System.register("books/dto/create-book.dto", [], function (exports_3, context_3) {
     "use strict";
     var CreateBookDto;
-    var __moduleName = context_2 && context_2.id;
+    var __moduleName = context_3 && context_3.id;
     return {
         setters: [],
         execute: function () {
@@ -125,14 +166,14 @@ System.register("books/dto/create-book.dto", [], function (exports_2, context_2)
                 }
                 return CreateBookDto;
             }());
-            exports_2("CreateBookDto", CreateBookDto);
+            exports_3("CreateBookDto", CreateBookDto);
         }
     };
 });
-System.register("books/dto/update-book.dto", ["@nestjs/mapped-types", "books/dto/create-book.dto"], function (exports_3, context_3) {
+System.register("books/dto/update-book.dto", ["@nestjs/mapped-types", "books/dto/create-book.dto"], function (exports_4, context_4) {
     "use strict";
     var mapped_types_1, create_book_dto_1, UpdateBookDto;
-    var __moduleName = context_3 && context_3.id;
+    var __moduleName = context_4 && context_4.id;
     return {
         setters: [
             function (mapped_types_1_1) {
@@ -150,21 +191,21 @@ System.register("books/dto/update-book.dto", ["@nestjs/mapped-types", "books/dto
                 }
                 return UpdateBookDto;
             }(mapped_types_1.PartialType(create_book_dto_1.CreateBookDto)));
-            exports_3("UpdateBookDto", UpdateBookDto);
+            exports_4("UpdateBookDto", UpdateBookDto);
         }
     };
 });
-System.register("books/books.service", ["mongoose", "@nestjs/common", "@nestjs/mongoose", "schemas/book.schema"], function (exports_4, context_4) {
+System.register("books/books.service", ["mongoose", "@nestjs/common", "@nestjs/mongoose", "schemas/book.schema"], function (exports_5, context_5) {
     "use strict";
-    var mongoose_2, common_1, mongoose_3, book_schema_1, BooksService;
-    var __moduleName = context_4 && context_4.id;
+    var mongoose_2, common_2, mongoose_3, book_schema_1, BooksService;
+    var __moduleName = context_5 && context_5.id;
     return {
         setters: [
             function (mongoose_2_1) {
                 mongoose_2 = mongoose_2_1;
             },
-            function (common_1_1) {
-                common_1 = common_1_1;
+            function (common_2_1) {
+                common_2 = common_2_1;
             },
             function (mongoose_3_1) {
                 mongoose_3 = mongoose_3_1;
@@ -198,24 +239,115 @@ System.register("books/books.service", ["mongoose", "@nestjs/common", "@nestjs/m
                     return book;
                 };
                 BooksService = __decorate([
-                    common_1.Injectable(),
+                    common_2.Injectable(),
                     __param(0, mongoose_3.InjectModel(book_schema_1.Book.name)),
                     __metadata("design:paramtypes", [mongoose_2.Model])
                 ], BooksService);
                 return BooksService;
             }());
-            exports_4("BooksService", BooksService);
+            exports_5("BooksService", BooksService);
         }
     };
 });
-System.register("books/books.controller", ["@nestjs/common", "books/books.service", "books/dto/create-book.dto", "books/dto/update-book.dto"], function (exports_5, context_5) {
+System.register("app.validation.pipe", ["@nestjs/common"], function (exports_6, context_6) {
     "use strict";
-    var common_2, books_service_1, create_book_dto_2, update_book_dto_1, BooksController;
-    var __moduleName = context_5 && context_5.id;
+    var common_3, ValidationPipe;
+    var __moduleName = context_6 && context_6.id;
     return {
         setters: [
-            function (common_2_1) {
-                common_2 = common_2_1;
+            function (common_3_1) {
+                common_3 = common_3_1;
+            }
+        ],
+        execute: function () {
+            ValidationPipe = /** @class */ (function () {
+                function ValidationPipe(schema) {
+                    this.schema = schema;
+                }
+                ValidationPipe.prototype.transform = function (value, metadata) {
+                    var error = this.schema.validate(value).error;
+                    if (error) {
+                        throw new common_3.BadRequestException('Validation failed');
+                    }
+                    return value;
+                };
+                ValidationPipe = __decorate([
+                    common_3.Injectable(),
+                    __metadata("design:paramtypes", [Object])
+                ], ValidationPipe);
+                return ValidationPipe;
+            }());
+            exports_6("ValidationPipe", ValidationPipe);
+        }
+    };
+});
+System.register("books/book.schema", ["joi"], function (exports_7, context_7) {
+    "use strict";
+    var Joi, bookSchema;
+    var __moduleName = context_7 && context_7.id;
+    return {
+        setters: [
+            function (Joi_1) {
+                Joi = Joi_1;
+            }
+        ],
+        execute: function () {
+            exports_7("bookSchema", bookSchema = Joi.object().keys({
+                title: Joi.string().required(),
+                description: Joi.string().required(),
+                authors: Joi.number().required(),
+                favorite: Joi.number().optional(),
+                fileCover: Joi.string().optional(),
+                fileName: Joi.string().optional(),
+                fileBook: Joi.string().optional()
+            }));
+        }
+    };
+});
+System.register("http.exception.filter", ["@nestjs/common"], function (exports_8, context_8) {
+    "use strict";
+    var common_4, HttpExceptionFilter;
+    var __moduleName = context_8 && context_8.id;
+    return {
+        setters: [
+            function (common_4_1) {
+                common_4 = common_4_1;
+            }
+        ],
+        execute: function () {
+            HttpExceptionFilter = /** @class */ (function () {
+                function HttpExceptionFilter() {
+                }
+                HttpExceptionFilter.prototype.catch = function (exception, host) {
+                    var ctx = host.switchToHttp();
+                    var response = ctx.getResponse();
+                    var status = exception.getStatus();
+                    response
+                        .status(status)
+                        .json({
+                        timestamp: new Date().toISOString(),
+                        status: 'fail',
+                        data: exception.message,
+                        code: exception.getStatus()
+                    });
+                };
+                HttpExceptionFilter = __decorate([
+                    common_4.Catch(common_4.HttpException)
+                ], HttpExceptionFilter);
+                return HttpExceptionFilter;
+            }());
+            exports_8("HttpExceptionFilter", HttpExceptionFilter);
+        }
+    };
+});
+System.register("books/books.controller", ["@nestjs/common", "books/books.service", "books/dto/create-book.dto", "books/dto/update-book.dto", "app.logging.interceptor", "app.validation.pipe", "books/book.schema", "http.exception.filter"], function (exports_9, context_9) {
+    "use strict";
+    var common_5, books_service_1, create_book_dto_2, update_book_dto_1, app_logging_interceptor_1, app_validation_pipe_1, book_schema_2, http_exception_filter_1, BooksController;
+    var __moduleName = context_9 && context_9.id;
+    return {
+        setters: [
+            function (common_5_1) {
+                common_5 = common_5_1;
             },
             function (books_service_1_1) {
                 books_service_1 = books_service_1_1;
@@ -225,6 +357,18 @@ System.register("books/books.controller", ["@nestjs/common", "books/books.servic
             },
             function (update_book_dto_1_1) {
                 update_book_dto_1 = update_book_dto_1_1;
+            },
+            function (app_logging_interceptor_1_1) {
+                app_logging_interceptor_1 = app_logging_interceptor_1_1;
+            },
+            function (app_validation_pipe_1_1) {
+                app_validation_pipe_1 = app_validation_pipe_1_1;
+            },
+            function (book_schema_2_1) {
+                book_schema_2 = book_schema_2_1;
+            },
+            function (http_exception_filter_1_1) {
+                http_exception_filter_1 = http_exception_filter_1_1;
             }
         ],
         execute: function () {
@@ -248,58 +392,61 @@ System.register("books/books.controller", ["@nestjs/common", "books/books.servic
                     return this.booksService.remove(id);
                 };
                 __decorate([
-                    common_2.Post(),
-                    __param(0, common_2.Body()),
+                    common_5.Post(),
+                    __param(0, common_5.Body(new app_validation_pipe_1.ValidationPipe(book_schema_2.bookSchema))),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [create_book_dto_2.CreateBookDto]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "create", null);
                 __decorate([
-                    common_2.Get(),
+                    common_5.Get(),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", []),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "findAll", null);
                 __decorate([
-                    common_2.Get(':id'),
-                    __param(0, common_2.Param('id')),
+                    common_5.Get(':id'),
+                    __param(0, common_5.Param('id')),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [String]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "findOne", null);
                 __decorate([
-                    common_2.Patch(':id'),
-                    __param(0, common_2.Param('id')),
-                    __param(1, common_2.Body()),
+                    common_5.Patch(':id'),
+                    __param(0, common_5.Param('id')),
+                    __param(1, common_5.Body(new app_validation_pipe_1.ValidationPipe(book_schema_2.bookSchema))),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [String, update_book_dto_1.UpdateBookDto]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "update", null);
                 __decorate([
-                    common_2.Delete(':id'),
-                    __param(0, common_2.Param('id')),
+                    common_5.Delete(':id'),
+                    __param(0, common_5.Param('id')),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [String]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "remove", null);
                 BooksController = __decorate([
-                    common_2.Controller('books'),
+                    common_5.UseInterceptors(app_logging_interceptor_1.LoggingInterceptor),
+                    common_5.UsePipes(app_validation_pipe_1.ValidationPipe),
+                    common_5.UseFilters(http_exception_filter_1.HttpExceptionFilter),
+                    common_5.Controller('books'),
                     __metadata("design:paramtypes", [books_service_1.BooksService])
                 ], BooksController);
                 return BooksController;
             }());
-            exports_5("BooksController", BooksController);
+            exports_9("BooksController", BooksController);
         }
     };
 });
-System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.service", "books/books.controller", "schemas/book.schema"], function (exports_6, context_6) {
+System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.service", "books/books.controller", "schemas/book.schema"], function (exports_10, context_10) {
     "use strict";
-    var common_3, mongoose_4, books_service_2, books_controller_1, book_schema_2, BooksModule;
-    var __moduleName = context_6 && context_6.id;
+    var common_6, mongoose_4, books_service_2, books_controller_1, book_schema_3, BooksModule;
+    var __moduleName = context_10 && context_10.id;
     return {
         setters: [
-            function (common_3_1) {
-                common_3 = common_3_1;
+            function (common_6_1) {
+                common_6 = common_6_1;
             },
             function (mongoose_4_1) {
                 mongoose_4 = mongoose_4_1;
@@ -310,8 +457,8 @@ System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "bo
             function (books_controller_1_1) {
                 books_controller_1 = books_controller_1_1;
             },
-            function (book_schema_2_1) {
-                book_schema_2 = book_schema_2_1;
+            function (book_schema_3_1) {
+                book_schema_3 = book_schema_3_1;
             }
         ],
         execute: function () {
@@ -319,26 +466,26 @@ System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "bo
                 function BooksModule() {
                 }
                 BooksModule = __decorate([
-                    common_3.Module({
-                        imports: [mongoose_4.MongooseModule.forFeature([{ name: book_schema_2.Book.name, schema: book_schema_2.BookSchema }])],
+                    common_6.Module({
+                        imports: [mongoose_4.MongooseModule.forFeature([{ name: book_schema_3.Book.name, schema: book_schema_3.BookSchema }])],
                         controllers: [books_controller_1.BooksController],
                         providers: [books_service_2.BooksService]
                     })
                 ], BooksModule);
                 return BooksModule;
             }());
-            exports_6("BooksModule", BooksModule);
+            exports_10("BooksModule", BooksModule);
         }
     };
 });
-System.register("app.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.module", "@nestjs/config"], function (exports_7, context_7) {
+System.register("app.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.module", "@nestjs/config"], function (exports_11, context_11) {
     "use strict";
-    var common_4, mongoose_5, books_module_1, config_1, AppModule;
-    var __moduleName = context_7 && context_7.id;
+    var common_7, mongoose_5, books_module_1, config_1, AppModule;
+    var __moduleName = context_11 && context_11.id;
     return {
         setters: [
-            function (common_4_1) {
-                common_4 = common_4_1;
+            function (common_7_1) {
+                common_7 = common_7_1;
             },
             function (mongoose_5_1) {
                 mongoose_5 = mongoose_5_1;
@@ -355,20 +502,20 @@ System.register("app.module", ["@nestjs/common", "@nestjs/mongoose", "books/book
                 function AppModule() {
                 }
                 AppModule = __decorate([
-                    common_4.Module({
+                    common_7.Module({
                         imports: [config_1.ConfigModule.forRoot(), mongoose_5.MongooseModule.forRoot('mongodb://localhost/nest'), books_module_1.BooksModule],
                     })
                 ], AppModule);
                 return AppModule;
             }());
-            exports_7("AppModule", AppModule);
+            exports_11("AppModule", AppModule);
         }
     };
 });
-System.register("book_repository", [], function (exports_8, context_8) {
+System.register("book_repository", [], function (exports_12, context_12) {
     "use strict";
     var Book, BookRepository;
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_12 && context_12.id;
     return {
         setters: [],
         execute: function () {
@@ -506,14 +653,14 @@ System.register("book_repository", [], function (exports_8, context_8) {
                 };
                 return BookRepository;
             }());
-            exports_8("BookRepository", BookRepository);
+            exports_12("BookRepository", BookRepository);
         }
     };
 });
-System.register("container", ["reflect-metadata", "inversify", "book_repository"], function (exports_9, context_9) {
+System.register("container", ["reflect-metadata", "inversify", "book_repository"], function (exports_13, context_13) {
     "use strict";
     var inversify_1, book_repository_1, container;
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_13 && context_13.id;
     return {
         setters: [
             function (_1) {
@@ -527,7 +674,7 @@ System.register("container", ["reflect-metadata", "inversify", "book_repository"
         ],
         execute: function () {
             container = new inversify_1.Container();
-            exports_9("container", container);
+            exports_13("container", container);
             container.bind(book_repository_1.BookRepository).toSelf();
         }
     };
