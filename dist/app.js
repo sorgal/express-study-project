@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -22,8 +19,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -61,14 +58,202 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-System.register("app.logging.interceptor", ["@nestjs/common", "express", "rxjs", "rxjs/operators"], function (exports_1, context_1) {
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+System.register("app.service", ["@nestjs/common"], function (exports_1, context_1) {
     "use strict";
-    var common_1, express_1, rxjs_1, operators_1, LoggingInterceptor;
+    var common_1, AppService;
     var __moduleName = context_1 && context_1.id;
     return {
         setters: [
             function (common_1_1) {
                 common_1 = common_1_1;
+            }
+        ],
+        execute: function () {
+            AppService = /** @class */ (function () {
+                function AppService() {
+                }
+                AppService.prototype.getHello = function () {
+                    return 'Hello World!';
+                };
+                AppService = __decorate([
+                    common_1.Injectable()
+                ], AppService);
+                return AppService;
+            }());
+            exports_1("AppService", AppService);
+        }
+    };
+});
+System.register("auth/jwt.auth.guard", ["@nestjs/common", "@nestjs/passport"], function (exports_2, context_2) {
+    "use strict";
+    var common_2, passport_1, JwtAuthGuard;
+    var __moduleName = context_2 && context_2.id;
+    return {
+        setters: [
+            function (common_2_1) {
+                common_2 = common_2_1;
+            },
+            function (passport_1_1) {
+                passport_1 = passport_1_1;
+            }
+        ],
+        execute: function () {
+            JwtAuthGuard = /** @class */ (function (_super) {
+                __extends(JwtAuthGuard, _super);
+                function JwtAuthGuard() {
+                    return _super !== null && _super.apply(this, arguments) || this;
+                }
+                JwtAuthGuard.prototype.canActivate = function (context) {
+                    return _super.prototype.canActivate.call(this, context);
+                };
+                JwtAuthGuard.prototype.handleRequest = function (err, user, info) {
+                    if (err) {
+                        throw err;
+                    }
+                    if (!user) {
+                        throw new common_2.UnauthorizedException();
+                    }
+                    return user;
+                };
+                JwtAuthGuard = __decorate([
+                    common_2.Injectable()
+                ], JwtAuthGuard);
+                return JwtAuthGuard;
+            }(passport_1.AuthGuard('jwt')));
+            exports_2("JwtAuthGuard", JwtAuthGuard);
+        }
+    };
+});
+System.register("auth/auth.service", ["@nestjs/common", "@nestjs/jwt"], function (exports_3, context_3) {
+    "use strict";
+    var common_3, jwt_1, User, AuthService;
+    var __moduleName = context_3 && context_3.id;
+    return {
+        setters: [
+            function (common_3_1) {
+                common_3 = common_3_1;
+            },
+            function (jwt_1_1) {
+                jwt_1 = jwt_1_1;
+            }
+        ],
+        execute: function () {
+            User = require('./models/user');
+            AuthService = /** @class */ (function () {
+                function AuthService(jwtService) {
+                    this.jwtService = jwtService;
+                }
+                AuthService.prototype.validateUser = function (id) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var user;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, User.findById(id)];
+                                case 1:
+                                    user = _a.sent();
+                                    if (user) {
+                                        return [2 /*return*/, user];
+                                    }
+                                    return [2 /*return*/, null];
+                            }
+                        });
+                    });
+                };
+                AuthService.prototype.createToken = function (payload) {
+                    return this.jwtService.sign(payload);
+                };
+                AuthService = __decorate([
+                    common_3.Injectable(),
+                    __metadata("design:paramtypes", [jwt_1.JwtService])
+                ], AuthService);
+                return AuthService;
+            }());
+            exports_3("AuthService", AuthService);
+        }
+    };
+});
+System.register("app.controller", ["@nestjs/common", "app.service", "auth/jwt.auth.guard", "auth/auth.service"], function (exports_4, context_4) {
+    "use strict";
+    var common_4, app_service_1, jwt_auth_guard_1, auth_service_1, User, AppController;
+    var __moduleName = context_4 && context_4.id;
+    return {
+        setters: [
+            function (common_4_1) {
+                common_4 = common_4_1;
+            },
+            function (app_service_1_1) {
+                app_service_1 = app_service_1_1;
+            },
+            function (jwt_auth_guard_1_1) {
+                jwt_auth_guard_1 = jwt_auth_guard_1_1;
+            },
+            function (auth_service_1_1) {
+                auth_service_1 = auth_service_1_1;
+            }
+        ],
+        execute: function () {
+            User = require('./models/user');
+            AppController = /** @class */ (function () {
+                function AppController(appService, authService) {
+                    this.appService = appService;
+                    this.authService = authService;
+                }
+                AppController.prototype.getHello = function () {
+                    return this.appService.getHello();
+                };
+                AppController.prototype.getToken = function (userId) {
+                    var user = User.findById(userId);
+                    return this.authService.createToken({ id: userId, email: user.email, firstName: user.firstName });
+                };
+                // @UseGuards(AuthGuard('local'))
+                AppController.prototype.login = function (req) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            return [2 /*return*/, req.user];
+                        });
+                    });
+                };
+                __decorate([
+                    common_4.Get(),
+                    __metadata("design:type", Function),
+                    __metadata("design:paramtypes", []),
+                    __metadata("design:returntype", String)
+                ], AppController.prototype, "getHello", null);
+                __decorate([
+                    common_4.Get('/token'),
+                    __metadata("design:type", Function),
+                    __metadata("design:paramtypes", [String]),
+                    __metadata("design:returntype", String)
+                ], AppController.prototype, "getToken", null);
+                __decorate([
+                    common_4.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+                    common_4.Post('/login'),
+                    __param(0, common_4.Request()),
+                    __metadata("design:type", Function),
+                    __metadata("design:paramtypes", [Object]),
+                    __metadata("design:returntype", Promise)
+                ], AppController.prototype, "login", null);
+                AppController = __decorate([
+                    common_4.Controller(),
+                    __metadata("design:paramtypes", [app_service_1.AppService, auth_service_1.AuthService])
+                ], AppController);
+                return AppController;
+            }());
+            exports_4("AppController", AppController);
+        }
+    };
+});
+System.register("app.logging.interceptor", ["@nestjs/common", "express", "rxjs", "rxjs/operators"], function (exports_5, context_5) {
+    "use strict";
+    var common_5, express_1, rxjs_1, operators_1, LoggingInterceptor;
+    var __moduleName = context_5 && context_5.id;
+    return {
+        setters: [
+            function (common_5_1) {
+                common_5 = common_5_1;
             },
             function (express_1_1) {
                 express_1 = express_1_1;
@@ -94,18 +279,18 @@ System.register("app.logging.interceptor", ["@nestjs/common", "express", "rxjs",
                     }));
                 };
                 LoggingInterceptor = __decorate([
-                    common_1.Injectable()
+                    common_5.Injectable()
                 ], LoggingInterceptor);
                 return LoggingInterceptor;
             }());
-            exports_1("LoggingInterceptor", LoggingInterceptor);
+            exports_5("LoggingInterceptor", LoggingInterceptor);
         }
     };
 });
-System.register("schemas/book.schema", ["@nestjs/mongoose"], function (exports_2, context_2) {
+System.register("schemas/book.schema", ["@nestjs/mongoose"], function (exports_6, context_6) {
     "use strict";
     var mongoose_1, Book, BookSchema;
-    var __moduleName = context_2 && context_2.id;
+    var __moduleName = context_6 && context_6.id;
     return {
         setters: [
             function (mongoose_1_1) {
@@ -149,15 +334,15 @@ System.register("schemas/book.schema", ["@nestjs/mongoose"], function (exports_2
                 ], Book);
                 return Book;
             }());
-            exports_2("Book", Book);
-            exports_2("BookSchema", BookSchema = mongoose_1.SchemaFactory.createForClass(Book));
+            exports_6("Book", Book);
+            exports_6("BookSchema", BookSchema = mongoose_1.SchemaFactory.createForClass(Book));
         }
     };
 });
-System.register("books/dto/create-book.dto", [], function (exports_3, context_3) {
+System.register("books/dto/create-book.dto", [], function (exports_7, context_7) {
     "use strict";
     var CreateBookDto;
-    var __moduleName = context_3 && context_3.id;
+    var __moduleName = context_7 && context_7.id;
     return {
         setters: [],
         execute: function () {
@@ -166,14 +351,14 @@ System.register("books/dto/create-book.dto", [], function (exports_3, context_3)
                 }
                 return CreateBookDto;
             }());
-            exports_3("CreateBookDto", CreateBookDto);
+            exports_7("CreateBookDto", CreateBookDto);
         }
     };
 });
-System.register("books/dto/update-book.dto", ["@nestjs/mapped-types", "books/dto/create-book.dto"], function (exports_4, context_4) {
+System.register("books/dto/update-book.dto", ["@nestjs/mapped-types", "books/dto/create-book.dto"], function (exports_8, context_8) {
     "use strict";
     var mapped_types_1, create_book_dto_1, UpdateBookDto;
-    var __moduleName = context_4 && context_4.id;
+    var __moduleName = context_8 && context_8.id;
     return {
         setters: [
             function (mapped_types_1_1) {
@@ -191,21 +376,21 @@ System.register("books/dto/update-book.dto", ["@nestjs/mapped-types", "books/dto
                 }
                 return UpdateBookDto;
             }(mapped_types_1.PartialType(create_book_dto_1.CreateBookDto)));
-            exports_4("UpdateBookDto", UpdateBookDto);
+            exports_8("UpdateBookDto", UpdateBookDto);
         }
     };
 });
-System.register("books/books.service", ["mongoose", "@nestjs/common", "@nestjs/mongoose", "schemas/book.schema"], function (exports_5, context_5) {
+System.register("books/books.service", ["mongoose", "@nestjs/common", "@nestjs/mongoose", "schemas/book.schema"], function (exports_9, context_9) {
     "use strict";
-    var mongoose_2, common_2, mongoose_3, book_schema_1, BooksService;
-    var __moduleName = context_5 && context_5.id;
+    var mongoose_2, common_6, mongoose_3, book_schema_1, BooksService;
+    var __moduleName = context_9 && context_9.id;
     return {
         setters: [
             function (mongoose_2_1) {
                 mongoose_2 = mongoose_2_1;
             },
-            function (common_2_1) {
-                common_2 = common_2_1;
+            function (common_6_1) {
+                common_6 = common_6_1;
             },
             function (mongoose_3_1) {
                 mongoose_3 = mongoose_3_1;
@@ -239,24 +424,24 @@ System.register("books/books.service", ["mongoose", "@nestjs/common", "@nestjs/m
                     return book;
                 };
                 BooksService = __decorate([
-                    common_2.Injectable(),
+                    common_6.Injectable(),
                     __param(0, mongoose_3.InjectModel(book_schema_1.Book.name)),
                     __metadata("design:paramtypes", [mongoose_2.Model])
                 ], BooksService);
                 return BooksService;
             }());
-            exports_5("BooksService", BooksService);
+            exports_9("BooksService", BooksService);
         }
     };
 });
-System.register("app.validation.pipe", ["@nestjs/common"], function (exports_6, context_6) {
+System.register("app.validation.pipe", ["@nestjs/common"], function (exports_10, context_10) {
     "use strict";
-    var common_3, ValidationPipe;
-    var __moduleName = context_6 && context_6.id;
+    var common_7, ValidationPipe;
+    var __moduleName = context_10 && context_10.id;
     return {
         setters: [
-            function (common_3_1) {
-                common_3 = common_3_1;
+            function (common_7_1) {
+                common_7 = common_7_1;
             }
         ],
         execute: function () {
@@ -267,24 +452,24 @@ System.register("app.validation.pipe", ["@nestjs/common"], function (exports_6, 
                 ValidationPipe.prototype.transform = function (value, metadata) {
                     var error = this.schema.validate(value).error;
                     if (error) {
-                        throw new common_3.BadRequestException('Validation failed');
+                        throw new common_7.BadRequestException('Validation failed');
                     }
                     return value;
                 };
                 ValidationPipe = __decorate([
-                    common_3.Injectable(),
+                    common_7.Injectable(),
                     __metadata("design:paramtypes", [Object])
                 ], ValidationPipe);
                 return ValidationPipe;
             }());
-            exports_6("ValidationPipe", ValidationPipe);
+            exports_10("ValidationPipe", ValidationPipe);
         }
     };
 });
-System.register("books/book.schema", ["joi"], function (exports_7, context_7) {
+System.register("books/book.schema", ["joi"], function (exports_11, context_11) {
     "use strict";
     var Joi, bookSchema;
-    var __moduleName = context_7 && context_7.id;
+    var __moduleName = context_11 && context_11.id;
     return {
         setters: [
             function (Joi_1) {
@@ -292,7 +477,7 @@ System.register("books/book.schema", ["joi"], function (exports_7, context_7) {
             }
         ],
         execute: function () {
-            exports_7("bookSchema", bookSchema = Joi.object().keys({
+            exports_11("bookSchema", bookSchema = Joi.object().keys({
                 title: Joi.string().required(),
                 description: Joi.string().required(),
                 authors: Joi.number().required(),
@@ -304,14 +489,14 @@ System.register("books/book.schema", ["joi"], function (exports_7, context_7) {
         }
     };
 });
-System.register("http.exception.filter", ["@nestjs/common"], function (exports_8, context_8) {
+System.register("http.exception.filter", ["@nestjs/common"], function (exports_12, context_12) {
     "use strict";
-    var common_4, HttpExceptionFilter;
-    var __moduleName = context_8 && context_8.id;
+    var common_8, HttpExceptionFilter;
+    var __moduleName = context_12 && context_12.id;
     return {
         setters: [
-            function (common_4_1) {
-                common_4 = common_4_1;
+            function (common_8_1) {
+                common_8 = common_8_1;
             }
         ],
         execute: function () {
@@ -332,22 +517,22 @@ System.register("http.exception.filter", ["@nestjs/common"], function (exports_8
                     });
                 };
                 HttpExceptionFilter = __decorate([
-                    common_4.Catch(common_4.HttpException)
+                    common_8.Catch(common_8.HttpException)
                 ], HttpExceptionFilter);
                 return HttpExceptionFilter;
             }());
-            exports_8("HttpExceptionFilter", HttpExceptionFilter);
+            exports_12("HttpExceptionFilter", HttpExceptionFilter);
         }
     };
 });
-System.register("books/books.controller", ["@nestjs/common", "books/books.service", "books/dto/create-book.dto", "books/dto/update-book.dto", "app.logging.interceptor", "app.validation.pipe", "books/book.schema", "http.exception.filter"], function (exports_9, context_9) {
+System.register("books/books.controller", ["@nestjs/common", "books/books.service", "books/dto/create-book.dto", "books/dto/update-book.dto", "app.logging.interceptor", "app.validation.pipe", "books/book.schema", "http.exception.filter", "auth/jwt.auth.guard"], function (exports_13, context_13) {
     "use strict";
-    var common_5, books_service_1, create_book_dto_2, update_book_dto_1, app_logging_interceptor_1, app_validation_pipe_1, book_schema_2, http_exception_filter_1, BooksController;
-    var __moduleName = context_9 && context_9.id;
+    var common_9, books_service_1, create_book_dto_2, update_book_dto_1, app_logging_interceptor_1, app_validation_pipe_1, book_schema_2, http_exception_filter_1, jwt_auth_guard_2, BooksController;
+    var __moduleName = context_13 && context_13.id;
     return {
         setters: [
-            function (common_5_1) {
-                common_5 = common_5_1;
+            function (common_9_1) {
+                common_9 = common_9_1;
             },
             function (books_service_1_1) {
                 books_service_1 = books_service_1_1;
@@ -369,6 +554,9 @@ System.register("books/books.controller", ["@nestjs/common", "books/books.servic
             },
             function (http_exception_filter_1_1) {
                 http_exception_filter_1 = http_exception_filter_1_1;
+            },
+            function (jwt_auth_guard_2_1) {
+                jwt_auth_guard_2 = jwt_auth_guard_2_1;
             }
         ],
         execute: function () {
@@ -392,61 +580,66 @@ System.register("books/books.controller", ["@nestjs/common", "books/books.servic
                     return this.booksService.remove(id);
                 };
                 __decorate([
-                    common_5.Post(),
-                    __param(0, common_5.Body(new app_validation_pipe_1.ValidationPipe(book_schema_2.bookSchema))),
+                    common_9.UseGuards(jwt_auth_guard_2.JwtAuthGuard),
+                    common_9.Post(),
+                    __param(0, common_9.Body(new app_validation_pipe_1.ValidationPipe(book_schema_2.bookSchema))),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [create_book_dto_2.CreateBookDto]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "create", null);
                 __decorate([
-                    common_5.Get(),
+                    common_9.UseGuards(jwt_auth_guard_2.JwtAuthGuard),
+                    common_9.Get(),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", []),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "findAll", null);
                 __decorate([
-                    common_5.Get(':id'),
-                    __param(0, common_5.Param('id')),
+                    common_9.UseGuards(jwt_auth_guard_2.JwtAuthGuard),
+                    common_9.Get(':id'),
+                    __param(0, common_9.Param('id')),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [String]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "findOne", null);
                 __decorate([
-                    common_5.Patch(':id'),
-                    __param(0, common_5.Param('id')),
-                    __param(1, common_5.Body(new app_validation_pipe_1.ValidationPipe(book_schema_2.bookSchema))),
+                    common_9.UseGuards(jwt_auth_guard_2.JwtAuthGuard),
+                    common_9.Patch(':id'),
+                    __param(0, common_9.Param('id')),
+                    __param(1, common_9.Body(new app_validation_pipe_1.ValidationPipe(book_schema_2.bookSchema))),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [String, update_book_dto_1.UpdateBookDto]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "update", null);
                 __decorate([
-                    common_5.Delete(':id'),
-                    __param(0, common_5.Param('id')),
+                    common_9.UseGuards(jwt_auth_guard_2.JwtAuthGuard),
+                    common_9.Delete(':id'),
+                    __param(0, common_9.Param('id')),
                     __metadata("design:type", Function),
                     __metadata("design:paramtypes", [String]),
                     __metadata("design:returntype", void 0)
                 ], BooksController.prototype, "remove", null);
                 BooksController = __decorate([
-                    common_5.UseInterceptors(app_logging_interceptor_1.LoggingInterceptor),
-                    common_5.UsePipes(app_validation_pipe_1.ValidationPipe),
-                    common_5.UseFilters(http_exception_filter_1.HttpExceptionFilter),
-                    common_5.Controller('books'),
+                    common_9.UseInterceptors(app_logging_interceptor_1.LoggingInterceptor),
+                    common_9.UsePipes(app_validation_pipe_1.ValidationPipe),
+                    common_9.UseFilters(http_exception_filter_1.HttpExceptionFilter),
+                    common_9.Controller('books'),
                     __metadata("design:paramtypes", [books_service_1.BooksService])
                 ], BooksController);
                 return BooksController;
             }());
-            exports_9("BooksController", BooksController);
+            exports_13("BooksController", BooksController);
         }
     };
 });
-System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.service", "books/books.controller", "schemas/book.schema"], function (exports_10, context_10) {
+System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.service", "books/books.controller", "schemas/book.schema"], function (exports_14, context_14) {
     "use strict";
-    var common_6, mongoose_4, books_service_2, books_controller_1, book_schema_3, BooksModule;
-    var __moduleName = context_10 && context_10.id;
+    var common_10, mongoose_4, books_service_2, books_controller_1, book_schema_3, BooksModule;
+    var __moduleName = context_14 && context_14.id;
     return {
         setters: [
-            function (common_6_1) {
-                common_6 = common_6_1;
+            function (common_10_1) {
+                common_10 = common_10_1;
             },
             function (mongoose_4_1) {
                 mongoose_4 = mongoose_4_1;
@@ -466,7 +659,7 @@ System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "bo
                 function BooksModule() {
                 }
                 BooksModule = __decorate([
-                    common_6.Module({
+                    common_10.Module({
                         imports: [mongoose_4.MongooseModule.forFeature([{ name: book_schema_3.Book.name, schema: book_schema_3.BookSchema }])],
                         controllers: [books_controller_1.BooksController],
                         providers: [books_service_2.BooksService]
@@ -474,18 +667,138 @@ System.register("books/books.module", ["@nestjs/common", "@nestjs/mongoose", "bo
                 ], BooksModule);
                 return BooksModule;
             }());
-            exports_10("BooksModule", BooksModule);
+            exports_14("BooksModule", BooksModule);
         }
     };
 });
-System.register("app.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.module", "@nestjs/config"], function (exports_11, context_11) {
+System.register("auth/constants", [], function (exports_15, context_15) {
     "use strict";
-    var common_7, mongoose_5, books_module_1, config_1, AppModule;
-    var __moduleName = context_11 && context_11.id;
+    var jwtConstants;
+    var __moduleName = context_15 && context_15.id;
+    return {
+        setters: [],
+        execute: function () {
+            exports_15("jwtConstants", jwtConstants = {
+                secret: process.env.authSecret
+            });
+        }
+    };
+});
+System.register("auth/jwt.strategy", ["passport-jwt", "@nestjs/passport", "@nestjs/common", "auth/auth.service", "auth/constants"], function (exports_16, context_16) {
+    "use strict";
+    var passport_jwt_1, passport_2, common_11, auth_service_2, constants_1, JwtStrategy;
+    var __moduleName = context_16 && context_16.id;
     return {
         setters: [
-            function (common_7_1) {
-                common_7 = common_7_1;
+            function (passport_jwt_1_1) {
+                passport_jwt_1 = passport_jwt_1_1;
+            },
+            function (passport_2_1) {
+                passport_2 = passport_2_1;
+            },
+            function (common_11_1) {
+                common_11 = common_11_1;
+            },
+            function (auth_service_2_1) {
+                auth_service_2 = auth_service_2_1;
+            },
+            function (constants_1_1) {
+                constants_1 = constants_1_1;
+            }
+        ],
+        execute: function () {
+            JwtStrategy = /** @class */ (function (_super) {
+                __extends(JwtStrategy, _super);
+                function JwtStrategy(authService) {
+                    var _this = _super.call(this, {
+                        jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+                        secretOrKey: constants_1.jwtConstants.secret
+                    }) || this;
+                    _this.authService = authService;
+                    return _this;
+                }
+                JwtStrategy.prototype.validate = function (payload) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var user;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, this.authService.validateUser(payload.id)];
+                                case 1:
+                                    user = _a.sent();
+                                    if (!user) {
+                                        throw new common_11.UnauthorizedException();
+                                    }
+                                    return [2 /*return*/, user];
+                            }
+                        });
+                    });
+                };
+                JwtStrategy = __decorate([
+                    common_11.Injectable(),
+                    __metadata("design:paramtypes", [auth_service_2.AuthService])
+                ], JwtStrategy);
+                return JwtStrategy;
+            }(passport_2.PassportStrategy(passport_jwt_1.Strategy)));
+            exports_16("JwtStrategy", JwtStrategy);
+        }
+    };
+});
+System.register("auth/auth.module", ["@nestjs/common", "auth/auth.service", "auth/jwt.strategy", "@nestjs/passport", "@nestjs/jwt", "auth/constants"], function (exports_17, context_17) {
+    "use strict";
+    var common_12, auth_service_3, jwt_strategy_1, passport_3, jwt_2, constants_2, AuthModule;
+    var __moduleName = context_17 && context_17.id;
+    return {
+        setters: [
+            function (common_12_1) {
+                common_12 = common_12_1;
+            },
+            function (auth_service_3_1) {
+                auth_service_3 = auth_service_3_1;
+            },
+            function (jwt_strategy_1_1) {
+                jwt_strategy_1 = jwt_strategy_1_1;
+            },
+            function (passport_3_1) {
+                passport_3 = passport_3_1;
+            },
+            function (jwt_2_1) {
+                jwt_2 = jwt_2_1;
+            },
+            function (constants_2_1) {
+                constants_2 = constants_2_1;
+            }
+        ],
+        execute: function () {
+            AuthModule = /** @class */ (function () {
+                function AuthModule() {
+                }
+                AuthModule = __decorate([
+                    common_12.Module({
+                        imports: [
+                            passport_3.PassportModule,
+                            jwt_2.JwtModule.register({
+                                secret: constants_2.jwtConstants.secret,
+                                signOptions: { expiresIn: '60s' },
+                            }),
+                        ],
+                        providers: [auth_service_3.AuthService, jwt_strategy_1.JwtStrategy],
+                        exports: [auth_service_3.AuthService],
+                    })
+                ], AuthModule);
+                return AuthModule;
+            }());
+            exports_17("AuthModule", AuthModule);
+        }
+    };
+});
+System.register("app.module", ["@nestjs/common", "@nestjs/mongoose", "books/books.module", "@nestjs/config", "app.controller", "app.service", "auth/auth.module"], function (exports_18, context_18) {
+    "use strict";
+    var common_13, mongoose_5, books_module_1, config_1, app_controller_1, app_service_2, auth_module_1, AppModule;
+    var __moduleName = context_18 && context_18.id;
+    return {
+        setters: [
+            function (common_13_1) {
+                common_13 = common_13_1;
             },
             function (mongoose_5_1) {
                 mongoose_5 = mongoose_5_1;
@@ -495,6 +808,15 @@ System.register("app.module", ["@nestjs/common", "@nestjs/mongoose", "books/book
             },
             function (config_1_1) {
                 config_1 = config_1_1;
+            },
+            function (app_controller_1_1) {
+                app_controller_1 = app_controller_1_1;
+            },
+            function (app_service_2_1) {
+                app_service_2 = app_service_2_1;
+            },
+            function (auth_module_1_1) {
+                auth_module_1 = auth_module_1_1;
             }
         ],
         execute: function () {
@@ -502,20 +824,22 @@ System.register("app.module", ["@nestjs/common", "@nestjs/mongoose", "books/book
                 function AppModule() {
                 }
                 AppModule = __decorate([
-                    common_7.Module({
-                        imports: [config_1.ConfigModule.forRoot(), mongoose_5.MongooseModule.forRoot('mongodb://localhost/nest'), books_module_1.BooksModule],
+                    common_13.Module({
+                        imports: [config_1.ConfigModule.forRoot(), mongoose_5.MongooseModule.forRoot('mongodb://localhost/nest'), books_module_1.BooksModule, auth_module_1.AuthModule],
+                        controllers: [app_controller_1.AppController],
+                        providers: [app_service_2.AppService],
                     })
                 ], AppModule);
                 return AppModule;
             }());
-            exports_11("AppModule", AppModule);
+            exports_18("AppModule", AppModule);
         }
     };
 });
-System.register("book_repository", [], function (exports_12, context_12) {
+System.register("book_repository", [], function (exports_19, context_19) {
     "use strict";
     var Book, BookRepository;
-    var __moduleName = context_12 && context_12.id;
+    var __moduleName = context_19 && context_19.id;
     return {
         setters: [],
         execute: function () {
@@ -653,14 +977,14 @@ System.register("book_repository", [], function (exports_12, context_12) {
                 };
                 return BookRepository;
             }());
-            exports_12("BookRepository", BookRepository);
+            exports_19("BookRepository", BookRepository);
         }
     };
 });
-System.register("container", ["reflect-metadata", "inversify", "book_repository"], function (exports_13, context_13) {
+System.register("container", ["reflect-metadata", "inversify", "book_repository"], function (exports_20, context_20) {
     "use strict";
     var inversify_1, book_repository_1, container;
-    var __moduleName = context_13 && context_13.id;
+    var __moduleName = context_20 && context_20.id;
     return {
         setters: [
             function (_1) {
@@ -674,7 +998,7 @@ System.register("container", ["reflect-metadata", "inversify", "book_repository"
         ],
         execute: function () {
             container = new inversify_1.Container();
-            exports_13("container", container);
+            exports_20("container", container);
             container.bind(book_repository_1.BookRepository).toSelf();
         }
     };
