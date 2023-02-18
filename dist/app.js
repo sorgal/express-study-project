@@ -208,7 +208,6 @@ System.register("app.controller", ["@nestjs/common", "app.service", "auth/jwt.au
                     var user = User.findById(userId);
                     return this.authService.createToken({ id: userId, email: user.email, firstName: user.firstName });
                 };
-                // @UseGuards(AuthGuard('local'))
                 AppController.prototype.login = function (req) {
                     return __awaiter(this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
