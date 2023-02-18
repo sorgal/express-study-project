@@ -42,8 +42,8 @@ router.use(session({ secret: 'SECRET'}));
 router.use(passport.initialize())
 router.use(passport.session())
 
-router.get('/login', (req, res) => {
-    res.render('users/login')
+router.get('/signin', (req, res) => {
+    res.render('users/signin')
 })
 
 router.post('/login',
